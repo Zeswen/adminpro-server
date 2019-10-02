@@ -1,7 +1,9 @@
+import bcrypt from 'bcrypt';
 import dbPool from '../config/DbPool';
 import { jsonRes } from '../config/constants';
 
 const USERS = 'users';
+const saltRounds = 10;
 
 export const insertUser = async (req, res) => {
   try {
@@ -9,10 +11,11 @@ export const insertUser = async (req, res) => {
     const db = await dbPool.connect();
     const usersCollection = db.collection(USERS);
     await usersCollection.createIndex({ email: 1 }, { unique: true });
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
     const customerCreated = await usersCollection.insertOne({
       name,
       email,
-      password,
+      password: hashedPassword,
       img,
       role
     });
