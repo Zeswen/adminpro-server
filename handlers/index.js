@@ -1,12 +1,12 @@
 import express from 'express';
-import { insertCustomers, queryCustomers } from './customers';
+import { insertUser, queryUsers } from './users';
 
 const app = express();
 
 const handlers = [
   // CUSTOMERS
-  app.get('/customers', queryCustomers),
-  app.post('/customers', insertCustomers)
+  app.get('/users', queryUsers),
+  app.post('/users', insertUser)
 ];
 
 export default handlers;
