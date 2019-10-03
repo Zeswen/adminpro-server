@@ -6,7 +6,7 @@ import dbPool from '../config/DbPool';
 import { jsonRes } from '../config/utils';
 import { COLLECTIONS } from '../config/constants';
 
-const { SECRET_KEY, CLIENT_ID, CLIENT_SECRET } = process.env;
+const { SECRET_KEY, CLIENT_ID } = process.env;
 const { USERS } = COLLECTIONS;
 
 const client = new OAuth2Client(CLIENT_ID);
