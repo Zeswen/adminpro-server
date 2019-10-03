@@ -12,7 +12,8 @@ const saltRounds = 10;
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password, img } = req.body;
+    const { name, email, password } = req.body;
+    const _id = dbPool.objectId();
     if (!name || !email || !password) {
       throw new Error('Name, email, and password are required.');
     }
@@ -21,6 +22,7 @@ export const register = async (req, res) => {
     await usersCollection.createIndex({ email: 1 }, { unique: true });
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     const userCreated = await usersCollection.insertOne({
+      _id,
       name,
       email,
       password: hashedPassword,
@@ -131,7 +133,11 @@ export const getUsers = async (req, res) => {
     const from = Number(req.query.from) || 0;
     const db = await dbPool.connect();
     const usersCollection = db.collection(USERS);
-    const users = await usersCollection.find({}).skip(from).limit(5).toArray();
+    const users = await usersCollection
+      .find({})
+      .skip(from)
+      .limit(5)
+      .toArray();
     await dbPool.disconnect();
     jsonRes(res, 200, users);
   } catch (err) {

@@ -1,6 +1,10 @@
 import express from 'express';
 import { isAuthorized } from '../config/utils';
 
+import { uploadImage } from './uploads';
+
+import { getImage } from './images';
+
 import {
   searchAll,
   searchUsers,
@@ -36,6 +40,10 @@ import {
 const app = express();
 
 const handlers = [
+  // UPLOADS
+  app.post('/upload/:collection/:_id', uploadImage),
+  // IMAGES
+  app.get('/img/:collection/:img', getImage),
   // SEARCH
   app.get('/search/:search', searchAll),
   app.get('/users/search/:search', searchUsers),

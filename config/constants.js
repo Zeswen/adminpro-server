@@ -1,3 +1,7 @@
+export const UPLOAD_PATH = './uploads';
+
+export const FILE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif'];
+
 export const COLLECTIONS = {
   USERS: 'users',
   HOSPITALS: 'hospitals',
