@@ -26,7 +26,7 @@ class DbPool {
       );
       return this.client.db(this.settings.name);
     } catch (err) {
-      throw new Error(err);
+      console.error(err);
     }
   }
 
@@ -37,7 +37,7 @@ class DbPool {
       );
       return this.client.close();
     } catch (err) {
-      throw new Error(err);
+      console.error(err);
     }
   }
 }
