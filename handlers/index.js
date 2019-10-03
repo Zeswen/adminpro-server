@@ -15,6 +15,7 @@ import {
 import {
   getUsers,
   register,
+  googleLogin,
   login,
   insertUser,
   updateUser,
@@ -52,6 +53,7 @@ const handlers = [
   // USERS
   app.get('/users', getUsers),
   app.post('/login', login),
+  app.post('/login/google', googleLogin),
   app.post('/register', register),
   app.post('/user', isAuthorized, insertUser),
   app.put('/user/:_id', isAuthorized, updateUser),

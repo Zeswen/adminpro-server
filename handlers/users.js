@@ -1,12 +1,30 @@
 import 'dotenv/config';
+import { OAuth2Client } from 'google-auth-library';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dbPool from '../config/DbPool';
 import { jsonRes } from '../config/utils';
 import { COLLECTIONS } from '../config/constants';
 
+const { SECRET_KEY, CLIENT_ID, CLIENT_SECRET } = process.env;
 const { USERS } = COLLECTIONS;
-const { SECRET_KEY } = process.env;
+
+const client = new OAuth2Client(CLIENT_ID);
+
+const verify = async token => {
+  const ticket = await client.verifyIdToken({
+    idToken: token,
+    audience: CLIENT_ID
+  });
+  const payload = ticket.getPayload();
+
+  return {
+    name: payload.name,
+    email: payload.email,
+    img: payload.img,
+    google: true
+  };
+};
 
 const saltRounds = 10;
 
@@ -59,6 +77,42 @@ export const login = async (req, res) => {
   } catch (err) {
     console.error(err);
     jsonRes(res, 400, null, err);
+  }
+};
+
+export const googleLogin = async (req, res) => {
+  try {
+    const { token } = req.body;
+    const googleUser = await verify(token);
+    const db = await dbPool.connect();
+    const usersCollection = db.collection(USERS);
+    const userFound = await usersCollection.findOne({
+      email: googleUser.email
+    });
+    if (!userFound) {
+      const newUser = {
+        name: googleUser.name,
+        email: googleUser.email,
+        img: googleUser.img,
+        google: true,
+        password: '123'
+      };
+      await usersCollection.createIndex({ email: 1 }, { unique: true });
+      await usersCollection.insertOne(newUser);
+      await dbPool.disconnect();
+    } else {
+      await dbPool.disconnect();
+      if (!userFound.google) throw new Error('Use normal authentication instead.');
+      const token = jwt.sign({ user: userFound }, SECRET_KEY, {
+        expiresIn: 14400
+      });
+      delete userFound['password'];
+      userFound['token'] = token;
+      jsonRes(res, 200, userFound);
+    }
+  } catch (err) {
+    console.error(err);
+    jsonRes(res, 403, null, err);
   }
 };
 
