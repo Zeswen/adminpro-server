@@ -1,4 +1,10 @@
-export const consoleColors = {
+export const COLLECTIONS = {
+  USERS: 'users',
+  HOSPITALS: 'hospitals',
+  DOCTORS: 'doctors'
+};
+
+export const CONSOLE_COLORS = {
   reset: '\x1b[0m',
   bright: '\x1b[1m',
   dim: '\x1b[2m',

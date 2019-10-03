@@ -3,10 +3,11 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dbPool from '../config/DbPool';
 import { jsonRes } from '../config/utils';
+import { COLLECTIONS } from '../config/constants';
 
+const { USERS } = COLLECTIONS;
 const { SECRET_KEY } = process.env;
 
-const USERS = 'users';
 const saltRounds = 10;
 
 export const register = async (req, res) => {
@@ -61,7 +62,10 @@ export const login = async (req, res) => {
 
 export const insertUser = async (req, res) => {
   try {
-    const { name, email, password, img, role } = req.body;
+    const { name, email, password, img, role = 'user' } = req.body;
+    if (!name || !email || !password || !role) {
+      throw new Error('Name, email, password and role are required.');
+    }
     const db = await dbPool.connect();
     const usersCollection = db.collection(USERS);
     await usersCollection.createIndex({ email: 1 }, { unique: true });
@@ -89,7 +93,7 @@ export const updateUser = async (req, res) => {
     const usersCollection = db.collection(USERS);
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     const userUpdated = await usersCollection.updateOne(
-      { _id },
+      { _id: dbPool.objectId(_id) },
       {
         name,
         email,
@@ -111,7 +115,9 @@ export const deleteUser = async (req, res) => {
     const { _id } = req.params;
     const db = await dbPool.connect();
     const usersCollection = db.collection(USERS);
-    const userDeleted = await usersCollection.deleteOne({ _id });
+    const userDeleted = await usersCollection.deleteOne({
+      _id: dbPool.objectId(_id)
+    });
     await dbPool.disconnect();
     jsonRes(res, 200, userDeleted);
   } catch (err) {
@@ -120,11 +126,12 @@ export const deleteUser = async (req, res) => {
   }
 };
 
-export const queryUsers = async (_, res) => {
+export const getUsers = async (req, res) => {
   try {
+    const from = Number(req.query.from) || 0;
     const db = await dbPool.connect();
     const usersCollection = db.collection(USERS);
-    const users = await usersCollection.find({}).toArray();
+    const users = await usersCollection.find({}).skip(from).limit(5).toArray();
     await dbPool.disconnect();
     jsonRes(res, 200, users);
   } catch (err) {

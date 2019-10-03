@@ -4,7 +4,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import handlers from './handlers';
 
-import { consoleColors } from './config/constants';
+import { CONSOLE_COLORS } from './config/constants';
 
 const app = express();
 
@@ -15,6 +15,6 @@ app.use(handlers);
 
 app.listen(process.env.PORT, () =>
   console.log(
-    `${consoleColors.bright}HospitalDB app listening on port ${consoleColors.cyan}${process.env.PORT}${consoleColors.reset}`
+    `${CONSOLE_COLORS.bright}HospitalDB app listening on port ${CONSOLE_COLORS.cyan}${process.env.PORT}${CONSOLE_COLORS.reset}`
   )
 );

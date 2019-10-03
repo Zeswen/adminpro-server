@@ -1,7 +1,7 @@
 import 'dotenv/config';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 
-import { consoleColors } from './constants';
+import { CONSOLE_COLORS } from './constants';
 
 const { MONGO_URL, MONGO_NAME } = process.env;
 
@@ -14,6 +14,10 @@ class DbPool {
     this.client;
   }
 
+  objectId(str) {
+    return ObjectId(str);
+  }
+
   async connect() {
     try {
       this.client = await MongoClient.connect(this.settings.url, {
@@ -21,7 +25,7 @@ class DbPool {
         useUnifiedTopology: true
       });
       console.log(
-        `${consoleColors.bright}Connected to MongoDB with the following settings:${consoleColors.reset}`,
+        `${CONSOLE_COLORS.bright}Connected to MongoDB with the following settings:${CONSOLE_COLORS.reset}`,
         this.settings
       );
       return this.client.db(this.settings.name);
@@ -33,7 +37,7 @@ class DbPool {
   async disconnect() {
     try {
       console.log(
-        `${consoleColors.bright}Disconnected from mongoDB.${consoleColors.reset}`
+        `${CONSOLE_COLORS.bright}Disconnected from mongoDB.${CONSOLE_COLORS.reset}`
       );
       return this.client.close();
     } catch (err) {
