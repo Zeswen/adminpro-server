@@ -44,7 +44,7 @@ export const register = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      img,
+      img: null,
       role: 'user'
     });
     await dbPool.disconnect();
@@ -61,8 +61,9 @@ export const login = async (req, res) => {
     const db = await dbPool.connect();
     const usersCollection = db.collection(USERS);
     const userFound = await usersCollection.findOne({ email });
-    if (!userFound) throw new Error('User was not found.');
     await dbPool.disconnect();
+    if (!userFound) throw new Error('User was not found.');
+    if (userFound.google) throw new Error('Use google authentication instead.');
     const matchPassword = await bcrypt.compare(password, userFound.password);
     if (matchPassword) {
       const token = jwt.sign({ user: userFound }, SECRET_KEY, {
@@ -102,11 +103,11 @@ export const googleLogin = async (req, res) => {
       await dbPool.disconnect();
     } else {
       await dbPool.disconnect();
-      if (!userFound.google) throw new Error('Use normal authentication instead.');
+      if (!userFound.google)
+        throw new Error('Use normal authentication instead.');
       const token = jwt.sign({ user: userFound }, SECRET_KEY, {
         expiresIn: 14400
       });
-      delete userFound['password'];
       userFound['token'] = token;
       jsonRes(res, 200, userFound);
     }
