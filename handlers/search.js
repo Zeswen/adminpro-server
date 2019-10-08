@@ -45,7 +45,7 @@ export const searchCollection = async (req, res) => {
       collection.charAt(0).toUpperCase() + collection.slice(1);
     const data = {
       [collection]: documents,
-      [`total${capitalizedCollection}`]: await dbCollection.count()
+      [`total${capitalizedCollection}`]: documents.length
     };
     await dbPool.disconnect();
     jsonRes(res, 200, data);

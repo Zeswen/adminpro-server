@@ -205,7 +205,7 @@ export const getUsers = async (req, res) => {
       .toArray();
     const data = {
       users,
-      totalUsers: await usersCollection.count()
+      totalUsers: await usersCollection.countDocuments()
     };
     await dbPool.disconnect();
     jsonRes(res, 200, data);

@@ -24,10 +24,7 @@ class DbPool {
         useNewUrlParser: true,
         useUnifiedTopology: true
       });
-      console.log(
-        `${CONSOLE_COLORS.bright}Connected to MongoDB with the following settings:${CONSOLE_COLORS.reset}`,
-        this.settings
-      );
+      console.log(`${CONSOLE_COLORS.bright}Connected to MongoDB`);
       return this.client.db(this.settings.name);
     } catch (err) {
       console.error(err);

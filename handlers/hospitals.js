@@ -2,9 +2,7 @@ import dbPool from '../config/DbPool';
 import { jsonRes } from '../config/utils';
 import { COLLECTIONS } from '../config/constants';
 
-
 const { HOSPITALS } = COLLECTIONS;
-
 
 export const insertHospital = async (req, res) => {
   try {
@@ -33,13 +31,12 @@ export const updateHospital = async (req, res) => {
     const { name, img, user } = req.body;
     const db = await dbPool.connect();
     const hospitalCollection = db.collection(HOSPITALS);
-    const hospitalUpdated = await hospitalCollection.updateOne(
+    const hospitalUpdated = await hospitalCollection.findOneAndUpdate(
       { _id: dbPool.objectId(_id) },
       {
-        name,
-        img,
-        user: dbPool.objectId(user)
-      }
+        $set: { name, img, user: dbPool.objectId(user) }
+      },
+      { returnOriginal: false }
     );
     await dbPool.disconnect();
     jsonRes(res, 200, hospitalUpdated);
@@ -106,14 +103,44 @@ export const getHospital = async (req, res) => {
   }
 };
 
-export const getHospitals = async (_, res) => {
+export const getHospitals = async (req, res) => {
   try {
     const from = Number(req.query.from) || 0;
+    const limit = Number(req.query.limit) || 5;
     const db = await dbPool.connect();
     const hospitalCollection = db.collection(HOSPITALS);
-    const hospitals = await hospitalCollection.find({}).skip(from).limit(5).toArray();
+    const hospitals = await hospitalCollection
+      .aggregate([
+        {
+          $skip: from
+        },
+        {
+          $limit: limit
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'user',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        {
+          $unwind: '$user'
+        },
+        {
+          $project: {
+            'user.password': 0
+          }
+        }
+      ])
+      .toArray();
+    const data = {
+      hospitals,
+      totalHospitals: await hospitalCollection.countDocuments()
+    };
     await dbPool.disconnect();
-    jsonRes(res, 200, hospitals);
+    jsonRes(res, 200, data);
   } catch (err) {
     console.error(err);
     jsonRes(res, 500, null, err);
