@@ -44,6 +44,7 @@ export const register = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      google: false,
       img: null,
       role: 'user'
     });
@@ -96,6 +97,7 @@ export const googleLogin = async (req, res) => {
         email: googleUser.email,
         img: googleUser.img,
         google: true,
+        role: 'user',
         password: '123'
       };
       await usersCollection.createIndex({ email: 1 }, { unique: true });
@@ -131,6 +133,7 @@ export const insertUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      google: false,
       img,
       role
     });
@@ -145,17 +148,20 @@ export const insertUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { _id } = req.params;
-    const { name, email, password, img, role } = req.body;
+    const { name, email, img, role } = req.body;
+    let { password } = req.body;
     const db = await dbPool.connect();
     const usersCollection = db.collection(USERS);
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    if (password) {
+      password = await bcrypt.hash(password, saltRounds);
+    }
     const userUpdated = await usersCollection.findOneAndUpdate(
       { _id: dbPool.objectId(_id) },
       {
         $set: {
           name,
           email,
-          password: hashedPassword,
+          password,
           img,
           role
         }
@@ -193,11 +199,16 @@ export const getUsers = async (req, res) => {
     const usersCollection = db.collection(USERS);
     const users = await usersCollection
       .find({})
+      .project({ password: 0 })
       .skip(from)
       .limit(5)
       .toArray();
+    const data = {
+      users,
+      totalUsers: await usersCollection.count()
+    };
     await dbPool.disconnect();
-    jsonRes(res, 200, users);
+    jsonRes(res, 200, data);
   } catch (err) {
     console.error(err);
     jsonRes(res, 500, null, err);

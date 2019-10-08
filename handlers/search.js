@@ -31,47 +31,24 @@ export const searchAll = async (req, res) => {
   }
 };
 
-export const searchUsers = async (req, res) => {
+export const searchCollection = async (req, res) => {
   try {
-    const { search } = req.params;
+    const { collection, search } = req.params;
     const regex = new RegExp(search, 'i');
     const db = await dbPool.connect();
-    const usersCollection = db.collection(USERS);
-    const users = await usersCollection
+    const dbCollection = db.collection(collection);
+    const documents = await dbCollection
       .find({ $or: [{ name: regex }, { email: regex }] })
+      .project({ password: 0 })
       .toArray();
+    const capitalizedCollection =
+      collection.charAt(0).toUpperCase() + collection.slice(1);
+    const data = {
+      [collection]: documents,
+      [`total${capitalizedCollection}`]: await dbCollection.count()
+    };
     await dbPool.disconnect();
-    jsonRes(res, 200, users);
-  } catch (err) {
-    console.error(err);
-    jsonRes(res, 400, null, err);
-  }
-};
-
-export const searchHospitals = async (req, res) => {
-  try {
-    const { search } = req.params;
-    const regex = new RegExp(search, 'i');
-    const db = await dbPool.connect();
-    const hospitalCollection = db.collection(HOSPITALS);
-    const hospitals = await hospitalCollection.find({ name: regex }).toArray();
-    await dbPool.disconnect();
-    jsonRes(res, 200, hospitals);
-  } catch (err) {
-    console.error(err);
-    jsonRes(res, 400, null, err);
-  }
-};
-
-export const searchDoctors = async (req, res) => {
-  try {
-    const { search } = req.params;
-    const regex = new RegExp(search, 'i');
-    const db = await dbPool.connect();
-    const doctorCollection = db.collection(DOCTORS);
-    const doctors = await doctorCollection.find({ name: regex }).toArray();
-    await dbPool.disconnect();
-    jsonRes(res, 200, doctors);
+    jsonRes(res, 200, data);
   } catch (err) {
     console.error(err);
     jsonRes(res, 400, null, err);

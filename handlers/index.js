@@ -5,12 +5,7 @@ import { uploadImage } from './uploads';
 
 import { getImage } from './images';
 
-import {
-  searchAll,
-  searchUsers,
-  searchHospitals,
-  searchDoctors
-} from './search';
+import { searchAll, searchCollection } from './search';
 
 import {
   getUsers,
@@ -46,10 +41,8 @@ const handlers = [
   // IMAGES
   app.get('/img/:collection/:img', getImage),
   // SEARCH
-  app.get('/search/:search', searchAll),
-  app.get('/users/search/:search', searchUsers),
-  app.get('/hospitals/search/:search', searchHospitals),
-  app.get('/doctors/search/:search', searchDoctors),
+  app.get('/search/all/:search', searchAll),
+  app.get('/search/:collection/:search', searchCollection),
   // USERS
   app.get('/users', getUsers),
   app.post('/login', login),
