@@ -149,15 +149,18 @@ export const updateUser = async (req, res) => {
     const db = await dbPool.connect();
     const usersCollection = db.collection(USERS);
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    const userUpdated = await usersCollection.updateOne(
+    const userUpdated = await usersCollection.findOneAndUpdate(
       { _id: dbPool.objectId(_id) },
       {
-        name,
-        email,
-        password: hashedPassword,
-        img,
-        role
-      }
+        $set: {
+          name,
+          email,
+          password: hashedPassword,
+          img,
+          role
+        }
+      },
+      { returnOriginal: false }
     );
     await dbPool.disconnect();
     jsonRes(res, 200, userUpdated);

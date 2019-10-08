@@ -42,9 +42,10 @@ const uploadImageByCollection = async (collection, _id, fileName, res) => {
         });
       });
     }
-    const updatedDocument = await documentsCollection.updateOne(
+    const updatedDocument = await documentsCollection.findOneAndUpdate(
       { _id: dbPool.objectId(_id) },
-      { $set: { img: fileName } }
+      { $set: { img: fileName } },
+      { returnOriginal: false }
     );
     await dbPool.disconnect();
     jsonRes(res, 200, updatedDocument);

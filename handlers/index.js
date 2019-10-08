@@ -42,7 +42,7 @@ const app = express();
 
 const handlers = [
   // UPLOADS
-  app.post('/upload/:collection/:_id', uploadImage),
+  app.put('/upload/:collection/:_id', uploadImage),
   // IMAGES
   app.get('/img/:collection/:img', getImage),
   // SEARCH

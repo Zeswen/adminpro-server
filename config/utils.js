@@ -1,7 +1,15 @@
 import 'dotenv/config';
 import jwt from 'jsonwebtoken';
+import { CONSOLE_COLORS } from './constants';
 
 const { SECRET_KEY } = process.env;
+
+export const logRequests = async (req, _, next) => {
+  console.log(
+    `${CONSOLE_COLORS.bright}${CONSOLE_COLORS.yellow} ${req.method}:${CONSOLE_COLORS.white} ${req.originalUrl}${CONSOLE_COLORS.reset}`
+  );
+  return next();
+};
 
 export const isAuthorized = async (req, res, next) => {
   try {

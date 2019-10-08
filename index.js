@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import handlers from './handlers';
 
 import { CONSOLE_COLORS } from './config/constants';
+import { logRequests } from './config/utils';
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.static(`${__dirname}/`));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(fileUpload());
+app.use(logRequests);
 app.use(handlers);
 
 app.listen(process.env.PORT, () =>
