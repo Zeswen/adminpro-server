@@ -31,10 +31,11 @@ const uploadImageByCollection = async (collection, _id, fileName, res) => {
     const document = await documentsCollection.findOne({
       _id: dbPool.objectId(_id)
     });
-    const oldPath = `${UPLOAD_PATH}/${collection}/${document.img}`;
+    console.log(document);
+    const oldPath = `${UPLOAD_PATH}/${collection}/${document.img || 'noimage'}`;
     if (fs.existsSync(oldPath)) {
       await new Promise((resolve, reject) => {
-        fs.unlink(oldPath, err => {
+        fs.unlinkSync(oldPath, err => {
           if (err) {
             reject(err);
           }
@@ -47,7 +48,7 @@ const uploadImageByCollection = async (collection, _id, fileName, res) => {
       { $set: { img: fileName } },
       { returnOriginal: false }
     );
-    await dbPool.disconnect();
+    
     jsonRes(res, 200, updatedDocument);
   } catch (err) {
     console.error(err);

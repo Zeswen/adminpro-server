@@ -48,7 +48,7 @@ export const register = async (req, res) => {
       img: null,
       role: 'user'
     });
-    await dbPool.disconnect();
+    
     jsonRes(res, 200, userCreated);
   } catch (err) {
     console.error(err);
@@ -62,7 +62,7 @@ export const login = async (req, res) => {
     const db = await dbPool.connect();
     const usersCollection = db.collection(USERS);
     const userFound = await usersCollection.findOne({ email });
-    await dbPool.disconnect();
+    
     if (!userFound) throw new Error('User was not found.');
     if (userFound.google) throw new Error('Use google authentication instead.');
     const matchPassword = await bcrypt.compare(password, userFound.password);
@@ -102,9 +102,9 @@ export const googleLogin = async (req, res) => {
       };
       await usersCollection.createIndex({ email: 1 }, { unique: true });
       await usersCollection.insertOne(newUser);
-      await dbPool.disconnect();
+      
     } else {
-      await dbPool.disconnect();
+      
       if (!userFound.google)
         throw new Error('Use normal authentication instead.');
       const token = jwt.sign({ user: userFound }, SECRET_KEY, {
@@ -137,7 +137,7 @@ export const insertUser = async (req, res) => {
       img,
       role
     });
-    await dbPool.disconnect();
+    
     jsonRes(res, 200, userCreated);
   } catch (err) {
     console.error(err);
@@ -168,7 +168,7 @@ export const updateUser = async (req, res) => {
       },
       { returnOriginal: false }
     );
-    await dbPool.disconnect();
+    
     jsonRes(res, 200, userUpdated);
   } catch (err) {
     console.error(err);
@@ -184,7 +184,7 @@ export const deleteUser = async (req, res) => {
     const userDeleted = await usersCollection.deleteOne({
       _id: dbPool.objectId(_id)
     });
-    await dbPool.disconnect();
+    
     jsonRes(res, 200, userDeleted);
   } catch (err) {
     console.error(err);
@@ -207,7 +207,7 @@ export const getUsers = async (req, res) => {
       users,
       totalUsers: await usersCollection.countDocuments()
     };
-    await dbPool.disconnect();
+    
     jsonRes(res, 200, data);
   } catch (err) {
     console.error(err);

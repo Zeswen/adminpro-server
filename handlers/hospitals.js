@@ -17,7 +17,7 @@ export const insertHospital = async (req, res) => {
       img,
       user: dbPool.objectId(user)
     });
-    await dbPool.disconnect();
+    
     jsonRes(res, 200, hospitalCreated);
   } catch (err) {
     console.error(err);
@@ -38,7 +38,7 @@ export const updateHospital = async (req, res) => {
       },
       { returnOriginal: false }
     );
-    await dbPool.disconnect();
+    
     jsonRes(res, 200, hospitalUpdated);
   } catch (err) {
     console.error(err);
@@ -54,7 +54,7 @@ export const deleteHospital = async (req, res) => {
     const hospitalDeleted = await hospitalCollection.deleteOne({
       _id: dbPool.objectId(_id)
     });
-    await dbPool.disconnect();
+    
     jsonRes(res, 200, hospitalDeleted);
   } catch (err) {
     console.error(err);
@@ -95,7 +95,7 @@ export const getHospital = async (req, res) => {
         }
       ])
       .toArray();
-    await dbPool.disconnect();
+    
     jsonRes(res, 200, hospital[0]);
   } catch (err) {
     console.error(err);
@@ -139,7 +139,7 @@ export const getHospitals = async (req, res) => {
       hospitals,
       totalHospitals: await hospitalCollection.countDocuments()
     };
-    await dbPool.disconnect();
+    
     jsonRes(res, 200, data);
   } catch (err) {
     console.error(err);

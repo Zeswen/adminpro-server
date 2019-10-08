@@ -18,7 +18,7 @@ export const searchAll = async (req, res) => {
       .toArray();
     const hospitals = await hospitalCollection.find({ name: regex }).toArray();
     const doctors = await doctorCollection.find({ name: regex }).toArray();
-    await dbPool.disconnect();
+    
     const all = {
       users,
       hospitals,
@@ -47,7 +47,7 @@ export const searchCollection = async (req, res) => {
       [collection]: documents,
       [`total${capitalizedCollection}`]: documents.length
     };
-    await dbPool.disconnect();
+    
     jsonRes(res, 200, data);
   } catch (err) {
     console.error(err);

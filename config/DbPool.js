@@ -22,9 +22,12 @@ class DbPool {
     try {
       this.client = await MongoClient.connect(this.settings.url, {
         useNewUrlParser: true,
-        useUnifiedTopology: true
+        useUnifiedTopology: true,
+        poolSize: 10
       });
-      console.log(`${CONSOLE_COLORS.bright}Connected to MongoDB`);
+      console.log(
+        `${CONSOLE_COLORS.bright}Connected to MongoDB.${CONSOLE_COLORS.reset}`
+      );
       return this.client.db(this.settings.name);
     } catch (err) {
       console.error(err);
@@ -43,4 +46,5 @@ class DbPool {
   }
 }
 
-export default new DbPool(MONGO_URL, MONGO_NAME);
+const dbPool = new DbPool(MONGO_URL, MONGO_NAME);
+export default dbPool;
