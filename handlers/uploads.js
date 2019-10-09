@@ -31,7 +31,6 @@ const uploadImageByCollection = async (collection, _id, fileName, res) => {
     const document = await documentsCollection.findOne({
       _id: dbPool.objectId(_id)
     });
-    console.log(document);
     const oldPath = `${UPLOAD_PATH}/${collection}/${document.img || 'noimage'}`;
     if (fs.existsSync(oldPath)) {
       await new Promise((resolve, reject) => {
