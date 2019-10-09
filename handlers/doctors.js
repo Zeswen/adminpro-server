@@ -22,7 +22,7 @@ export const insertDoctor = async (req, res) => {
     jsonRes(res, 200, doctorCreated);
   } catch (err) {
     console.error(err);
-    jsonRes(res, 400, null, err);
+    jsonRes(res, 400, null, err.message);
   }
 };
 
@@ -49,7 +49,7 @@ export const updateDoctor = async (req, res) => {
     jsonRes(res, 200, doctorUpdated);
   } catch (err) {
     console.error(err);
-    jsonRes(res, 400, null, err);
+    jsonRes(res, 400, null, err.message);
   }
 };
 
@@ -65,7 +65,7 @@ export const deleteDoctor = async (req, res) => {
     jsonRes(res, 200, doctorDeleted);
   } catch (err) {
     console.error(err);
-    jsonRes(res, 400, null, err);
+    jsonRes(res, 400, null, err.message);
   }
 };
 
@@ -119,7 +119,7 @@ export const getDoctor = async (req, res) => {
     jsonRes(res, 200, doctor);
   } catch (err) {
     console.error(err);
-    jsonRes(res, 500, null, err);
+    jsonRes(res, 500, null, err.message);
   }
 };
 
@@ -174,6 +174,6 @@ export const getDoctors = async (req, res) => {
     jsonRes(res, 200, data);
   } catch (err) {
     console.error(err);
-    jsonRes(res, 500, null, err);
+    jsonRes(res, 500, null, err.message);
   }
 };

@@ -13,12 +13,10 @@ export const searchAll = async (req, res) => {
     const usersCollection = db.collection(USERS);
     const hospitalCollection = db.collection(HOSPITALS);
     const doctorCollection = db.collection(DOCTORS);
-    const users = await usersCollection
-      .find({ $or: [{ name: regex }, { email: regex }] })
-      .toArray();
+    const users = await usersCollection.find({ name: regex }).toArray();
     const hospitals = await hospitalCollection.find({ name: regex }).toArray();
     const doctors = await doctorCollection.find({ name: regex }).toArray();
-    
+
     const all = {
       users,
       hospitals,
@@ -27,7 +25,7 @@ export const searchAll = async (req, res) => {
     jsonRes(res, 200, all);
   } catch (err) {
     console.error(err);
-    jsonRes(res, 400, null, err);
+    jsonRes(res, 400, null, err.message);
   }
 };
 
@@ -47,10 +45,10 @@ export const searchCollection = async (req, res) => {
       [collection]: documents,
       [`total${capitalizedCollection}`]: documents.length
     };
-    
+
     jsonRes(res, 200, data);
   } catch (err) {
     console.error(err);
-    jsonRes(res, 400, null, err);
+    jsonRes(res, 400, null, err.message);
   }
 };

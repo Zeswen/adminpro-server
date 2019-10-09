@@ -48,11 +48,11 @@ export const register = async (req, res) => {
       img: null,
       role: 'user'
     });
-    
+
     jsonRes(res, 200, userCreated);
   } catch (err) {
     console.error(err);
-    jsonRes(res, 400, null, err);
+    jsonRes(res, 400, null, err.message);
   }
 };
 
@@ -62,7 +62,6 @@ export const login = async (req, res) => {
     const db = await dbPool.connect();
     const usersCollection = db.collection(USERS);
     const userFound = await usersCollection.findOne({ email });
-    
     if (!userFound) throw new Error('User was not found.');
     if (userFound.google) throw new Error('Use google authentication instead.');
     const matchPassword = await bcrypt.compare(password, userFound.password);
@@ -72,13 +71,14 @@ export const login = async (req, res) => {
       });
       delete userFound['password'];
       userFound['token'] = token;
+      userFound['menu'] = getMenu(userFound.role);
       jsonRes(res, 200, userFound);
     } else {
       jsonRes(res, 401, null, "Password doesn't match.");
     }
   } catch (err) {
     console.error(err);
-    jsonRes(res, 400, null, err);
+    jsonRes(res, 400, null, err.message);
   }
 };
 
@@ -102,20 +102,19 @@ export const googleLogin = async (req, res) => {
       };
       await usersCollection.createIndex({ email: 1 }, { unique: true });
       await usersCollection.insertOne(newUser);
-      
     } else {
-      
       if (!userFound.google)
         throw new Error('Use normal authentication instead.');
       const token = jwt.sign({ user: userFound }, SECRET_KEY, {
         expiresIn: 14400
       });
       userFound['token'] = token;
+      userFound['menu'] = getMenu(userFound.role);
       jsonRes(res, 200, userFound);
     }
   } catch (err) {
     console.error(err);
-    jsonRes(res, 403, null, err);
+    jsonRes(res, 403, null, err.message);
   }
 };
 
@@ -137,11 +136,11 @@ export const insertUser = async (req, res) => {
       img,
       role
     });
-    
+
     jsonRes(res, 200, userCreated);
   } catch (err) {
     console.error(err);
-    jsonRes(res, 400, null, err);
+    jsonRes(res, 400, null, err.message);
   }
 };
 
@@ -168,11 +167,11 @@ export const updateUser = async (req, res) => {
       },
       { returnOriginal: false }
     );
-    
+
     jsonRes(res, 200, userUpdated);
   } catch (err) {
     console.error(err);
-    jsonRes(res, 400, null, err);
+    jsonRes(res, 400, null, err.message);
   }
 };
 
@@ -184,11 +183,11 @@ export const deleteUser = async (req, res) => {
     const userDeleted = await usersCollection.deleteOne({
       _id: dbPool.objectId(_id)
     });
-    
+
     jsonRes(res, 200, userDeleted);
   } catch (err) {
     console.error(err);
-    jsonRes(res, 400, null, err);
+    jsonRes(res, 400, null, err.message);
   }
 };
 
@@ -207,10 +206,39 @@ export const getUsers = async (req, res) => {
       users,
       totalUsers: await usersCollection.countDocuments()
     };
-    
+
     jsonRes(res, 200, data);
   } catch (err) {
     console.error(err);
-    jsonRes(res, 500, null, err);
+    jsonRes(res, 500, null, err.message);
   }
+};
+
+const getMenu = role => {
+  const menu = [
+    {
+      title: 'Main',
+      icon: 'mdi mdi-gauge',
+      submenu: [
+        { title: 'Dashboard', url: '/dashboard' },
+        { title: 'Progress Bar', url: '/progress' },
+        { title: 'Charts', url: '/charts1' },
+        { title: 'Promises', url: '/promises' },
+        { title: 'RxJs', url: '/rxjs' }
+      ]
+    },
+    {
+      title: 'Admin',
+      icon: 'mdi mdi-folder-lock-open',
+      submenu: [
+        { title: 'Hospitals', url: '/hospitals' },
+        { title: 'Doctors', url: '/doctors' }
+      ]
+    }
+  ];
+
+  if (role === 'admin') {
+    menu[1].submenu.unshift({ title: 'Users', url: '/users' });
+  }
+  return menu;
 };

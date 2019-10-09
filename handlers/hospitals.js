@@ -21,7 +21,7 @@ export const insertHospital = async (req, res) => {
     jsonRes(res, 200, hospitalCreated);
   } catch (err) {
     console.error(err);
-    jsonRes(res, 400, null, err);
+    jsonRes(res, 400, null, err.message);
   }
 };
 
@@ -42,7 +42,7 @@ export const updateHospital = async (req, res) => {
     jsonRes(res, 200, hospitalUpdated);
   } catch (err) {
     console.error(err);
-    jsonRes(res, 400, null, err);
+    jsonRes(res, 400, null, err.message);
   }
 };
 
@@ -58,7 +58,7 @@ export const deleteHospital = async (req, res) => {
     jsonRes(res, 200, hospitalDeleted);
   } catch (err) {
     console.error(err);
-    jsonRes(res, 400, null, err);
+    jsonRes(res, 400, null, err.message);
   }
 };
 
@@ -99,7 +99,7 @@ export const getHospital = async (req, res) => {
     jsonRes(res, 200, hospital[0]);
   } catch (err) {
     console.error(err);
-    jsonRes(res, 500, null, err);
+    jsonRes(res, 500, null, err.message);
   }
 };
 
@@ -143,6 +143,6 @@ export const getHospitals = async (req, res) => {
     jsonRes(res, 200, data);
   } catch (err) {
     console.error(err);
-    jsonRes(res, 500, null, err);
+    jsonRes(res, 500, null, err.message);
   }
 };

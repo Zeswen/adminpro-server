@@ -1,5 +1,5 @@
 import express from 'express';
-import { isAuthorized } from '../config/utils';
+import { isAuthorized, isAdmin, isAdminOrOwnUser } from '../middlewares';
 
 import { uploadImage } from './uploads';
 
@@ -49,20 +49,20 @@ const handlers = [
   app.post('/login/google', googleLogin),
   app.post('/register', register),
   app.post('/user', isAuthorized, insertUser),
-  app.put('/user/:_id', isAuthorized, updateUser),
-  app.delete('/user/:_id', isAuthorized, deleteUser),
+  app.put('/user/:_id', isAuthorized, isAdminOrOwnUser, updateUser),
+  app.delete('/user/:_id', isAuthorized, isAdmin, deleteUser),
   // HOSPITALS
   app.get('/hospitals', getHospitals),
   app.post('/hospital', isAuthorized, insertHospital),
   app.get('/hospital/:_id', getHospital),
-  app.put('/hospital/:_id', isAuthorized, updateHospital),
-  app.delete('/hospital/:_id', isAuthorized, deleteHospital),
+  app.put('/hospital/:_id', isAuthorized, isAdminOrOwnUser, updateHospital),
+  app.delete('/hospital/:_id', isAuthorized, isAdmin, deleteHospital),
   // DOCTORS
   app.get('/doctors', getDoctors),
   app.post('/doctor', isAuthorized, insertDoctor),
   app.get('/doctor/:_id', getDoctor),
-  app.put('/doctor/:_id', isAuthorized, updateDoctor),
-  app.delete('/doctor/:_id', isAuthorized, deleteDoctor)
+  app.put('/doctor/:_id', isAuthorized, isAdminOrOwnUser, updateDoctor),
+  app.delete('/doctor/:_id', isAuthorized, isAdmin, deleteDoctor)
 ];
 
 export default handlers;

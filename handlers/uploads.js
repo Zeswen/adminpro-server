@@ -20,7 +20,7 @@ export const uploadImage = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    jsonRes(res, 400, null, err);
+    jsonRes(res, 400, null, err.message);
   }
 };
 
@@ -51,6 +51,6 @@ const uploadImageByCollection = async (collection, _id, fileName, res) => {
     jsonRes(res, 200, updatedDocument);
   } catch (err) {
     console.error(err);
-    jsonRes(res, 400, null, err);
+    jsonRes(res, 400, null, err.message);
   }
 };
