@@ -26,6 +26,14 @@ const verify = async token => {
   };
 };
 
+export const renewToken = (req, res) => {
+  const { user } = req;
+  const token = jwt.sign({ user }, SECRET_KEY, {
+    expiresIn: 14400
+  });
+  jsonRes(res, 200, token);
+};
+
 const saltRounds = 10;
 
 export const register = async (req, res) => {
